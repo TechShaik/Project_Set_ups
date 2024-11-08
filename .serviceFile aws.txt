@@ -1,0 +1,25 @@
+                                                                  Description=Greeting Application
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/app
+ExecStart=/usr/bin/java -jar /home/ubuntu/app/target/GreetingApp-0.0.1-SNAPSHOT.jar
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+
+to open-sudo nano /etc/systemd/system/spring.service
+to reload after adding-sudo systemctl daemon-reload
+to start-sudo systemctl start spring.service
+to stop-sudo systemctl stop spring.service
+to check status-sudo systemctl status spring.service
+
+
+
+
