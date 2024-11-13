@@ -1,0 +1,192 @@
+ssh -i jenkin-server-key.pem ubuntu@13.51.109.71  
+
+ sudo apt update
+
+update-alternatives --config java
+
+ sudo apt install openjdk-17-jdk
+
+  java -version
+
+ sudo apt install maven
+
+ mvn -version
+
+sudo apt update
+
+sudo apt install openjdk-11-jdk
+
+wget -q -O - https://pkg.jenkins.io/jenkins.io.key | sudo tee /usr/share/keyrings/jenkins-archive-keyring.asc
+
+echo "deb [signed-by=/usr/share/keyrings/jenkins-archive-keyring.asc] https://pkg.jenkins.io/debian/ stable main" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+sudo apt update
+sudo apt install jenkins
+
+sudo systemctl start jenkins
+
+sudo systemctl enable jenkins
+
+sudo systemctl status jenkins
+ 
+Edit inbound rules
+
+sudo cat  /var/lib/jenkins/secrets/initialAdminPassword  in cmd
+
+paste password from cmd and create account
+
+log in create a job
+
+paste repo link
+
+bulid console enter -mvn clean package
+
+change to main and deploy
+
+
+-----------------------------------------------------
+optional :
+
+ssh-keygen
+
+(/home/ubuntu/.ssh/id_ed25519)
+
+press entr entr
+
+to delete keys-rm -f ~/.ssh/id_ed25519 ~/.ssh/id_ed25519.pub
+
+
+copy key of jenkin and paste in application authorized keys
+
+to enter in key file-  ls ~/.ssh/
+
+among two keys select .pub key -sudo cat ~/.ssh/id_ed25519.pub
+
+sudo nano ~/.ssh/authorized_keys
+
+enter through the given path
+
+paste the other instance pub_ip
+
+------------------------------------------------------------------------==================
+connect without authentication:
+
+ssh-keygen -t rsa -b 2048
+
+cd .ssh
+
+ls
+
+cat id.pub
+
+copy 
+
+now in application----
+
+sudo nano ~/.ssh/authorized_keys
+
+paste here carefully and save
+
+from jenkin log in application with private ip and connection success
+
+------------------------------------------------------------------------------------------
+
+Bulid step for Free style :
+ 
+mvn clean package
+
+scp -o StrictHostKeyChecking=no $WORKSPACE/target/<jar_file_name> ubuntu@<pr-ip_aplctn>:/home/ubuntu/app/target/
+
+ssh ubuntu@<pr-ip_aplctn> 'sudo systemctl restart <.Service_file>'
+
+ssh ubuntu@<pr-ip_aplctn> 'sudo systemctl status <.Service_file>'
+
+
+for 2nd url its a copy and place command 
+
+1.set no host key check
+
+2.get Jenkins jar file path 
+  
+  $WORKSPACE/target/User-0.0.1-SNAPSHOT.jar-add dollar symbol and target and jar name-this is new jar file
+
+  we keep it in our app instead of old jar-home/ubuntu/app/target
+
+follow next steps and bulid and run..
+
+every time u change code u have to run bulid step
+
+ ------------------------------------------------------------------------------------------
+
+Build step for pipeline:
+
+select pipeline script in pipeline
+
+pipeline {
+    agent any
+
+    stages {
+        stage('git pull') {
+            steps {
+              git branch: 'main', url: 'https://github.com/TechShaik/UserApplication.git'
+            }
+        }
+        stage('mvn-clean'){
+            steps{
+                 sh 'mvn clean package'
+
+            }
+        }
+        stage('copy'){
+            steps{
+                script{
+                 sh """
+                    scp -o StrictHostKeyChecking=no $WORKSPACE/target/User-0.0.1-SNAPSHOT.jar ubuntu@172.31.45.43:/home/ubuntu/app/target/
+                  """
+                }
+                
+    
+            }
+        }
+        stage('restart'){
+            steps{
+             
+            script{
+                 sh """ssh ubuntu@172.31.45.43 'sudo systemctl restart spring.service' """
+                  }
+        }
+        }
+        
+        stage('status'){
+            steps{
+                script{
+                      sh """ssh ubuntu@172.31.45.43 'sudo systemctl status spring.service' """
+                }
+            }
+        }
+}
+         post {
+        success {
+            echo 'Deployment succeeded!'
+        }
+        failure {
+            echo 'Deployment failed!'
+
+    }
+    
+}
+}
+
+
+the script must be in this format
+
+use pipeline syntax for GitHub url to pull code
+
+select git and generate
+
+save and built
+
+every time u change code u have to run bulid step
+
+
+ 
