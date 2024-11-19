@@ -1,0 +1,105 @@
+------------
+docker
+
+sudo apt update
+sudo apt install -y docker.io docker-compose
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker $USER
+
+-----------
+java
+
+# Update package list and install OpenJDK 17
+
+sudo apt update && sudo apt upgrade -y
+sudo apt install openjdk-17-jdk -y
+java -version
+
+----------
+maven
+
+# Install Maven
+sudo apt install maven -y 
+mvn -v
+
+----------
+for git 
+
+# Install Git
+sudo apt install git -y
+git --version
+
+
+git clone 
+
+----------------------------------------
+
+create docker file
+
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+-----------------------------------------
+
+mvn clean package
+
+docker build -t my-spring-boot-app .
+
+------------------------------------
+
+create compose.yml file:
+
+ version: '3.8'
+services:
+  app:
+    image: my-spring-boot-app
+    container_name: spring-app
+    ports:
+      - "8081:8081"  # Exposing Spring Boot on port 8081
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/shaikdb
+      SPRING_DATASOURCE_USERNAME: shaik
+      SPRING_DATASOURCE_PASSWORD: Shaik@414
+
+  db:
+    image: mysql:8
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword  # Add a value here
+      MYSQL_DATABASE: shaikdb
+      MYSQL_USER: shaik
+      MYSQL_PASSWORD: Shaik@414
+    ports:
+      - "3306:3306"
+
+
+----------------------
+
+docker-compose up -d
+
+docker ps
+
+----------------------
+after changes
+
+docker-compose down
+docker-compose up -d
+
+
+mvn clean package
+docker build -t my-spring-boot-app .
+docker-compose up -d --build
+
+
+
+
+ 
+
+
